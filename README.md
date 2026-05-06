@@ -1,30 +1,29 @@
 # watch-store-query-line
 
-`watch-store-query-line` is a Swift project for Databases. It turns develop a Swift command-oriented project for query scenarios with append-only fixtures, checkpoint recovery checks, and offline replay mode into a small local model with readable fixtures and a direct verification command.
+`watch-store-query-line` keeps a focused Swift implementation around databases. The project goal is to develop a Swift command-oriented project for query scenarios with append-only fixtures, checkpoint recovery checks, and offline replay mode.
 
-## Reading Watch Store Query Line
+## Why It Exists
 
-Start with the README, then open `metadata/project.json` to check the constants behind the examples. After that, `fixtures/cases.csv` shows the compact path and `examples/extended_cases.csv` gives a wider look at the same rule.
+I want this repository to be useful as a quick reading exercise: fixtures first, implementation second, verifier last.
 
-## Purpose
+## Watch Store Query Line Review Notes
 
-This project keeps the domain idea close to the tests. That makes it useful as a reference implementation, a small experiment, or a starting point for a more specialized tool.
+For a quick review, compare `index fit` with `join width` before reading the middle cases.
 
-## Fixture Notes
+## Features
 
-`examples/extended_cases.csv` adds six named cases. I kept the names plain so failures are easy to read in a terminal: baseline, pressure, surge, degraded, recovery, and boundary.
+- `fixtures/domain_review.csv` adds cases for index fit and join width.
+- `metadata/domain-review.json` records the same cases in structured form.
+- `config/review-profile.json` captures the read order and the two review questions.
+- `examples/watch-store-query-walkthrough.md` walks through the case spread.
+- The Swift code includes a review path for `index fit` and `join width`.
+- `docs/field-notes.md` explains the strongest and weakest cases.
 
-## Design Sketch
+## Architecture Notes
 
-The design is intentionally direct: parse or construct a signal, score it, classify it, and verify the expected branch. This makes the repository useful for studying databases behavior without needing a service or database unless the language project itself is SQL. The Swift project compiles a minimal command-line test harness against the local Windows SDK.
+The implementation keeps the scoring rule plain: reward signal and confidence, preserve slack, penalize drag, then classify the result into a review lane.
 
-## What It Does
-
-- Models schema shape with deterministic scoring and explicit review decisions.
-- Uses fixture data to keep query checks changes visible in code review.
-- Includes extended examples for fixture rows, including `surge` and `degraded`.
-- Documents constraint behavior tradeoffs in `docs/operations.md`.
-- Runs locally with a single verification command and no external credentials.
+The Swift code keeps the review rule close to the tests.
 
 ## Usage
 
@@ -32,37 +31,10 @@ The design is intentionally direct: parse or construct a signal, score it, class
 powershell -NoProfile -ExecutionPolicy Bypass -File scripts/verify.ps1
 ```
 
-This runs the language-level build or test path against the compact fixture set.
+## Tests
 
-## Verification
+The same command runs the local verification path. The highest-scoring domain case is `stale` at 212, which lands in `ship`. The most cautious case is `stress` at 153, which lands in `ship`.
 
-```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File scripts/audit.ps1
-```
+## Limitations And Roadmap
 
-The audit command checks repository structure and README constraints before it delegates to the verifier.
-
-## Files Worth Reading
-
-- `src`: primary implementation
-- `tests`: verification harness
-- `fixtures`: compact golden scenarios
-- `examples`: expanded scenario set
-- `metadata`: project constants and verification metadata
-- `docs`: operations and extension notes
-- `scripts`: local verification and audit commands
-
-## Next Directions
-
-- Add a comparison mode that shows how decisions change when one signal is adjusted.
-- Add a loader for `examples/extended_cases.csv` and promote selected cases into the language test suite.
-- Add a short report command that prints the score breakdown for a single scenario.
-- Add one more databases fixture that focuses on a malformed or borderline input.
-
-## Limits
-
-The examples cover useful edges, not every edge. A larger version would add malformed-input tests, richer reports, and deeper domain parsers.
-
-## Setup
-
-The only required setup is the local Swift toolchain. After cloning, stay in the repo root so fixture paths resolve correctly.
+No external service is required. A deeper version would add more negative cases and a clearer boundary around invalid input.
